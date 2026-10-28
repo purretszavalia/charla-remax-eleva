@@ -5,34 +5,33 @@
 // no hace falta tocar ningún componente.
 //
 // Estructura:
-//   charla.hero    -> la portada (#inicio)
-//   charla.mapa    -> intro del mapa (#mapa). Las 11 preguntas se
-//                     toman de charla.pasos (no se repiten acá).
-//   charla.pasos   -> los 11 pasos (#paso-1 ... #paso-11)
-//   charla.cierre  -> el cierre (#cierre)
+//   charla.hero            -> portada (#inicio)
+//   charla.quienSoy        -> quién soy (#quien-soy)
+//   charla.mapa            -> intro del mapa + mini proceso (#mapa)
+//   charla.pasos           -> los 11 pasos (#paso-1 ... #paso-11)
+//   charla.complementarias -> secciones extra (#videos, #tercerizar, #consistencia)
+//   charla.cierre          -> el cierre con el proceso completo (#cierre)
+//
+// El ORDEN en que se muestran las secciones (y el indicador de
+// progreso) está en src/lib/secciones.ts.
 //
 // Cada paso tiene: numero, pregunta (el título), respuesta (la
 // frase corta destacada) y "bloques" (el detalle, en orden).
-// Un bloque es una pieza de contenido con un "tipo". Más abajo
-// están todos los tipos disponibles con un ejemplo.
+// Los tipos de bloque están documentados abajo.
 // ============================================================
 
-// ---------- Tipos de bloque (no hace falta tocar esto) ----------
+// ---------- Tipos de bloque ----------
 
 /** Un párrafo de texto corrido. */
 export type BloqueParrafo = { tipo: "parrafo"; texto: string };
 
-/** Un subtítulo chico dentro del paso, para separar ideas. */
+/** Un subtítulo chico dentro de la sección, para separar ideas. */
 export type BloqueSubtitulo = { tipo: "subtitulo"; texto: string };
 
 /** Una lista con viñetas. Título opcional. */
-export type BloqueLista = {
-  tipo: "lista";
-  titulo?: string;
-  items: string[];
-};
+export type BloqueLista = { tipo: "lista"; titulo?: string; items: string[] };
 
-/** Una lista donde cada ítem tiene un término en negrita y su detalle. */
+/** Lista donde cada ítem tiene un término en negrita y su detalle. */
 export type BloqueListaDef = {
   tipo: "listaDef";
   titulo?: string;
@@ -55,11 +54,36 @@ export type BloqueTabla = {
   filas: string[][];
 };
 
-/** Checklist con tildes. */
+/** Checklist con tildes (ítems simples). */
 export type BloqueChecklist = {
   tipo: "checklist";
   titulo?: string;
   items: string[];
+};
+
+/** Checklist con tilde donde cada ítem tiene título + una línea de explicación. */
+export type BloqueChecklistDetalle = {
+  tipo: "checklistDetalle";
+  titulo?: string;
+  items: { titulo: string; detalle: string }[];
+};
+
+/** Bloque de texto para copiar (por ejemplo, un prompt). */
+export type BloquePrompt = { tipo: "prompt"; titulo: string; texto: string };
+
+/** Grilla de tarjetas (título + texto opcional) con un pie opcional. */
+export type BloqueTarjetas = {
+  tipo: "tarjetas";
+  items: { titulo: string; texto?: string }[];
+  pie?: string;
+};
+
+/** Subsección destacada (una tarjeta con etiqueta opcional + título + texto). */
+export type BloqueSubseccion = {
+  tipo: "subseccion";
+  etiqueta?: string;
+  titulo: string;
+  texto: string;
 };
 
 /** Dos caminos lado a lado: uno largo (gris) y uno corto (acento). */
@@ -69,18 +93,14 @@ export type BloqueComparacion = {
   corto: { titulo: string; pasos: string[] };
 };
 
-/** Conversación tipo chat. "cliente" va a la izquierda, "asesor" a la derecha. */
+/** Conversación tipo chat. "cliente" a la izquierda, "asesor" a la derecha. */
 export type BloqueChat = {
   tipo: "chat";
   mensajes: { de: "cliente" | "asesor"; texto: string }[];
 };
 
-/** Recuadro "Hasta acá" con una lista corta de lo que ya tenemos. */
-export type BloqueRecap = {
-  tipo: "recap";
-  titulo?: string;
-  items: string[];
-};
+/** Recuadro "Hasta acá" con una lista corta. */
+export type BloqueRecap = { tipo: "recap"; titulo?: string; items: string[] };
 
 /** Bloque "en construcción": borde punteado, para desarrollar después. */
 export type BloqueEnConstruccion = { tipo: "enConstruccion"; titulo: string };
@@ -96,6 +116,10 @@ export type Bloque =
   | BloqueCallout
   | BloqueTabla
   | BloqueChecklist
+  | BloqueChecklistDetalle
+  | BloquePrompt
+  | BloqueTarjetas
+  | BloqueSubseccion
   | BloqueComparacion
   | BloqueChat
   | BloqueRecap
@@ -109,25 +133,70 @@ export type Paso = {
   bloques: Bloque[];
 };
 
+export type Complementaria = {
+  id: string;
+  antetitulo: string;
+  titulo: string;
+  respuesta?: string;
+  bloques: Bloque[];
+};
+
 // ---------- El contenido ----------
 
 export const charla = {
   // ========================= HERO (#inicio) =========================
   hero: {
     antetitulo: "Charla para asesores · RE/MAX Eleva",
-    titulo: "Vender una casa, de lo complejo a lo simple",
+    titulo: "Marketing y proceso de ventas: de lo complejo a lo simple",
     bajada: "Menos herramientas, más sistema.",
     texto:
-      "Hay mucho contenido, muchos canales y muchas herramientas. Eso abruma. La propuesta de hoy es otra: antes de moverte, entendé el proceso. Vamos a partir de una pregunta simple —“tengo que vender una casa, ¿qué hago?”— y desglosarla paso a paso, como lo pensaría yo si tuviera que hacerlo hoy.",
-    boton: { label: "Empezar", href: "#mapa" },
+      "En marketing hay mil cosas para hacer (o dejar de hacer). No hace falta hacerlas todas. La clave es saber qué preguntas hacerte, buscar las respuestas sin complicarte la vida y armar algo consistente, con lo que te sientas cómodo. Vamos a partir de una pregunta simple —“tengo que vender una casa, ¿qué hago?”— y desglosarla paso a paso.",
+    boton: { label: "Empezar", href: "#quien-soy" },
+  },
+
+  // ========================= QUIÉN SOY (#quien-soy) =========================
+  quienSoy: {
+    titulo: "Quién soy y por qué hablo de esto",
+    bajada:
+      "No soy experto en vender casas. Soy experto en marketing: en armar procesos que llevan a una persona desde “no te conozco” hasta “quiero hablar con vos”.",
+    foto: "/pedro.jpg",
+    nombre: "Pedro Urrets",
+    rol: "Marketing & Growth",
+    textoHumand:
+      "Fui la primera persona de marketing en Humand (Y Combinator W22). Cuando llegué, marketing no existía: había una web y un flujo de contactos a ventas que perdía gente en casi todos los pasos. En tres años y medio armamos todo desde cero.",
+    stats: [
+      { valor: "1 → ~60", etiqueta: "personas en el equipo de marketing" },
+      {
+        valor: "#1",
+        etiqueta:
+          "canal de adquisición: clientes que llegaban solos gracias al marketing",
+      },
+      { valor: "~60 → 1.500+", etiqueta: "clientes" },
+      { valor: "6 → 51", etiqueta: "países" },
+      {
+        valor: "USD 66M",
+        etiqueta: "la Serie A más grande de la historia de LATAM (feb. 2026)",
+      },
+    ],
+    textoAntes:
+      "Antes de Humand: a los 22 fui Sales Manager en Vilahouse, vendiendo casas prefabricadas: lideré un equipo de 10 vendedores que en dos meses fue el de mejor rendimiento de la empresa. También hice growth en una startup de surf en EE.UU. y fundé mi propia productora de eventos.",
+    callout: {
+      titulo: "Lo que aprendí y aplica acá",
+      texto:
+        "Primero lo básico bien hecho, después probar y mejorar. Y el objetivo nunca son los contactos: son las ventas.",
+    },
   },
 
   // ========================= MAPA (#mapa) =========================
-  // Las 11 preguntas se generan automáticamente a partir de charla.pasos.
   mapa: {
-    titulo: "El proceso en 11 preguntas",
+    titulo: "Hacete las preguntas correctas",
     bajada:
-      "Cada paso responde una pregunta y te lleva a la siguiente. No memorices tips: aprendé a hacerte la próxima pregunta.",
+      "Lo importante no es cuántas preguntas son, sino hacerte las correctas, de forma simple.",
+    proceso: [
+      { titulo: "Entendé qué tiene que pasar en cada etapa" },
+      { titulo: "Anotalo: armá el proceso completo" },
+      { titulo: "Pulí, optimizá y mejorá cada etapa" },
+    ],
   },
 
   // ========================= PASOS (#paso-1 ... #paso-11) =========================
@@ -148,13 +217,12 @@ export const charla = {
     {
       numero: 2,
       pregunta: "¿A quién se la quiero vender?",
-      respuesta:
-        "Antes de pensar en “mucha gente”, entendé quién es el comprador más probable.",
+      respuesta: "Definí tu audiencia.",
       bloques: [
         {
           tipo: "parrafo",
           texto:
-            "Todo lo que viene después se decide en base a esto: qué mostrás, cómo lo decís y dónde.",
+            "Antes de pensar en “mucha gente”, entendé quién es el comprador más probable. Todo lo que viene después se decide en base a esto: qué mostrás, cómo lo decís y dónde.",
         },
         {
           tipo: "tabla",
@@ -184,21 +252,13 @@ export const charla = {
     {
       numero: 3,
       pregunta: "¿Dónde está esa gente y cómo llego a la mayor cantidad?",
-      respuesta: "Uno a uno no escala. Las redes sí.",
+      respuesta: "RE/MAX + tu marketing personal.",
       bloques: [
         {
-          tipo: "listaDef",
+          tipo: "lista",
           items: [
-            {
-              termino: "Uno a uno",
-              detalle:
-                "contactos en común, referidos. Suma, pero llegás a pocos.",
-            },
-            {
-              termino: "Volumen",
-              detalle:
-                "las redes sociales te permiten mostrar fotos y videos a muchísima gente a la vez.",
-            },
+            "Uno a uno (contactos en común, referidos) suma, pero llegás a pocos.",
+            "Las redes sociales te permiten mostrar fotos y videos a muchísima gente a la vez.",
           ],
         },
         {
@@ -206,7 +266,7 @@ export const charla = {
           variante: "clave",
           titulo: "Lo que ya te resuelve RE/MAX",
           texto:
-            "Con la casa cargada, ya está visible en todos los portales y en toda la red RE/MAX. Tu esfuerzo acá es poco: una buena foto y una buena descripción. RE/MAX ya tiene la guía de cómo hacerlo.",
+            "Con la casa cargada, ya está visible en todos los portales y en toda la red RE/MAX. Tu esfuerzo ahí es poco: una buena foto y una buena descripción, siguiendo la guía de RE/MAX. Tu marketing personal es lo que sumás encima para llegar a más gente.",
         },
       ],
     },
@@ -214,7 +274,8 @@ export const charla = {
     {
       numero: 4,
       pregunta: "¿Qué canal sumo además de RE/MAX?",
-      respuesta: "Uno solo. Yo elegiría Instagram.",
+      respuesta:
+        "El que, con menos esfuerzo y con los recursos que tenés, te lleve a la mayor cantidad de tu audiencia.",
       bloques: [
         { tipo: "subtitulo", texto: "Por qué uno solo" },
         {
@@ -222,7 +283,7 @@ export const charla = {
           texto:
             "LinkedIn, Facebook, Instagram… cada canal requiere consistencia, estrategia y aprender sobre la marcha. Es como sumar un trabajo nuevo. Si abrís muchos, hacés todo a medias. Elegí uno y especializate.",
         },
-        { tipo: "subtitulo", texto: "Por qué Instagram" },
+        { tipo: "subtitulo", texto: "Mi ejemplo, Instagram" },
         {
           tipo: "lista",
           items: [
@@ -239,7 +300,7 @@ export const charla = {
             "Tengo la casa.",
             "Sé a quién le hablo.",
             "Ya está visible en RE/MAX.",
-            "Elegí un canal extra: Instagram.",
+            "Elegí un canal extra.",
           ],
         },
       ],
@@ -247,17 +308,129 @@ export const charla = {
 
     {
       numero: 5,
-      pregunta: "¿Qué le muestro a ese comprador?",
+      pregunta: "¿Qué necesito para abrir ese canal?",
+      respuesta: "Un perfil bien armado, separado de tu perfil personal.",
+      bloques: [
+        { tipo: "subtitulo", texto: "Separá lo personal de lo profesional" },
+        {
+          tipo: "parrafo",
+          texto:
+            "Si sigo una cuenta porque sube alquileres en Córdoba y me empieza a subir fotos de su perro o del cumpleaños del sobrino, la dejo de seguir. No es lo que fui a buscar.",
+        },
+        {
+          tipo: "parrafo",
+          texto:
+            "Al revés: si entro a un perfil y todo son casas y terrenos, quizás no compro hoy, pero lo sigo para cuando compre.",
+        },
+        {
+          tipo: "checklistDetalle",
+          titulo: "Las partes del perfil",
+          items: [
+            {
+              titulo: "Cuenta profesional",
+              detalle:
+                "te da estadísticas y botones de contacto, incluido el botón de WhatsApp.",
+            },
+            {
+              titulo: "Foto de calidad",
+              detalle:
+                "podés mejorar una foto tuya gratis con ChatGPT. Que siga pareciéndose a vos: el cliente te va a conocer en persona.",
+            },
+            {
+              titulo: "Nombre",
+              detalle:
+                "tu nombre + qué hacés + dónde (ej.: “Ana Pérez | Casas en Córdoba”). Es lo que aparece cuando alguien busca.",
+            },
+            {
+              titulo: "Bio",
+              detalle:
+                "qué hacés, en qué zona y para quién, cerrando con una acción concreta (ej.: “Escribime por WhatsApp 👇”).",
+            },
+            {
+              titulo: "Link",
+              detalle:
+                "que lleve directo a tu WhatsApp. Probalo desde otro celular antes de publicar.",
+            },
+            {
+              titulo: "Historias destacadas",
+              detalle:
+                "tu vidriera fija. Por ejemplo: Disponibles, Vendidas, Sobre mí, Zonas, Testimonios.",
+            },
+            {
+              titulo: "Hashtags",
+              detalle:
+                "hasta 5 por publicación, y específicos (barrio, ciudad, tipo de propiedad).",
+            },
+          ],
+        },
+        {
+          tipo: "prompt",
+          titulo: "Prompt para tu foto de perfil",
+          texto:
+            "Mejorá esta foto para usarla como foto de perfil profesional: fondo neutro, buena luz, encuadre de hombros para arriba. Mantené mi cara exactamente igual, sin cambiar mis rasgos.",
+        },
+        {
+          tipo: "parrafo",
+          texto:
+            "RE/MAX tiene una guía de perfil: usala. Y para el resto, mirá el paso siguiente.",
+        },
+      ],
+    },
+
+    {
+      numero: 6,
+      pregunta: "¿Tengo que inventar todo desde cero?",
       respuesta:
-        "Lo que esa persona quiere ver y escuchar, en los formatos que más se difunden.",
+        "No. No reinventes la rueda: fijate a quién ya le funciona y copiá lo que hace.",
+      bloques: [
+        {
+          tipo: "callout",
+          variante: "clave",
+          texto:
+            "Estudiar suma, pero no es requisito para arrancar. Alguien ya probó, testeó y sabe qué funciona.",
+        },
+        {
+          tipo: "parrafo",
+          texto:
+            "El ejercicio: elegí 5 referentes que le vendan a tu misma audiencia y anotá qué tienen en común. Te sirve para dos cosas:",
+        },
+        {
+          tipo: "checklist",
+          titulo: "Para armar tu perfil",
+          items: ["Foto", "Nombre", "Bio", "Link", "Historias destacadas"],
+        },
+        {
+          tipo: "checklist",
+          titulo: "Para tu contenido",
+          items: [
+            "Qué tipo de contenido suben",
+            "Cómo lo muestran",
+            "Cada cuánto publican",
+            "Qué partes de la casa muestran",
+            "Cómo filman",
+          ],
+        },
+        {
+          tipo: "parrafo",
+          texto:
+            "Compará sus videos que mejor y peor funcionaron, y replicá lo mejor posible. Si a alguien le va bárbaro con reels y carruseles, no te quemes la cabeza: probá con eso.",
+        },
+      ],
+    },
+
+    {
+      numero: 7,
+      pregunta: "¿Qué le muestro a ese comprador para vender la casa?",
+      respuesta:
+        "La información que esa persona quiere ver, en los formatos que más se difunden.",
       bloques: [
         { tipo: "subtitulo", texto: "Formatos" },
         {
           tipo: "parrafo",
           texto:
-            "Según la guía de RE/MAX, los formatos más pensados para viralidad son los reels y los carruseles.",
+            "Según la guía de RE/MAX, los más pensados para viralidad son los reels y los carruseles.",
         },
-        { tipo: "subtitulo", texto: "Qué mostrar, según el comprador" },
+        { tipo: "subtitulo", texto: "Qué mostrar, según tu audiencia" },
         {
           tipo: "listaDef",
           items: [
@@ -275,78 +448,7 @@ export const charla = {
         {
           tipo: "parrafo",
           texto:
-            "Primero pensá qué le interesa a esa persona. Después elegí el formato. Y para saber cómo hacerlo bien, pasá al paso siguiente.",
-        },
-      ],
-    },
-
-    {
-      numero: 6,
-      pregunta: "¿Cómo lo hago bien sin estudiar meses?",
-      respuesta:
-        "No reinventes la rueda: fijate a quién ya le funciona y copiá lo que hace.",
-      bloques: [
-        {
-          tipo: "callout",
-          variante: "clave",
-          texto:
-            "Estudiar suma, pero no es requisito para arrancar. Alguien ya probó, testeó y sabe qué funciona.",
-        },
-        {
-          tipo: "parrafo",
-          texto:
-            "Buscá a alguien a quien le esté yendo bien vendiéndole a la misma gente que vos, y mirá:",
-        },
-        {
-          tipo: "checklist",
-          items: [
-            "Cómo publica",
-            "Cuándo publica",
-            "Qué tipo de contenido sube",
-            "Cómo muestra la casa",
-            "Qué partes de la casa muestra",
-            "Cómo filma",
-          ],
-        },
-        {
-          tipo: "parrafo",
-          texto:
-            "Compará sus videos que mejor y peor funcionaron, y replicá lo mejor posible.",
-        },
-        {
-          tipo: "destacado",
-          texto:
-            "Si a esa persona le va bárbaro con reels y carruseles, no te quemes la cabeza: probá con eso.",
-        },
-      ],
-    },
-
-    {
-      numero: 7,
-      pregunta: "¿Cómo hago que me sigan y vuelvan?",
-      respuesta: "Consistencia, y lo personal separado de lo profesional.",
-      bloques: [
-        { tipo: "subtitulo", texto: "Consistencia" },
-        {
-          tipo: "parrafo",
-          texto:
-            "Mismo tipo de contenido, mismo formato, mismo “cómo”. Podés probar formatos distintos, pero manteniendo la línea.",
-        },
-        { tipo: "subtitulo", texto: "Separar lo personal de lo profesional" },
-        {
-          tipo: "parrafo",
-          texto:
-            "Si sigo una cuenta porque sube alquileres en Córdoba y me empieza a subir fotos de su perro o del cumpleaños del sobrino, la dejo de seguir. No es lo que fui a buscar.",
-        },
-        {
-          tipo: "parrafo",
-          texto:
-            "Al revés: si entro a un perfil y todo son casas y terrenos, quizás no compro hoy, pero lo sigo para cuando compre. Sé que me va a seguir mostrando lo que me interesa.",
-        },
-        {
-          tipo: "enConstruccion",
-          titulo:
-            "Apartado: los componentes de un buen perfil de Instagram (y para qué sirve cada uno)",
+            "Primero pensá qué le interesa a esa persona. Después elegí el formato. Y publicá.",
         },
       ],
     },
@@ -354,9 +456,13 @@ export const charla = {
     {
       numero: 8,
       pregunta: "¿Cómo hago que me contacten?",
-      respuesta:
-        "Reducí la fricción: que lleguen a tu WhatsApp con un solo toque.",
+      respuesta: "Hacéselo fácil: que lleguen a tu WhatsApp con un solo toque.",
       bloques: [
+        {
+          tipo: "parrafo",
+          texto:
+            "Pensá en los pasos que tiene que seguir la persona para escribirte, y simplificalos al máximo.",
+        },
         {
           tipo: "callout",
           variante: "porQueImporta",
@@ -410,15 +516,13 @@ export const charla = {
 
     {
       numero: 9,
-      pregunta: "¿Cómo respondo bien a todos sin escribir lo mismo 200 veces?",
-      respuesta:
-        "Prepará las respuestas antes, y tené un WhatsApp solo para trabajo.",
+      pregunta: "¿Qué información va a necesitar cuando me escriba?",
+      respuesta: "Tenela preparada, para mandarla una y otra vez.",
       bloques: [
-        { tipo: "subtitulo", texto: "Pensá antes" },
         {
           tipo: "parrafo",
           texto:
-            "¿Qué te van a preguntar de esta casa? Las preguntas se repiten, del mismo cliente o de otros por la misma casa. Por ejemplo: precio, expensas, metros, si es apta crédito, ubicación, horarios de visita.",
+            "Las preguntas se repiten, del mismo cliente o de otros por la misma casa: precio, expensas, metros, si es apta crédito, ubicación, horarios de visita. Escribilas una vez y convertilas en plantillas.",
         },
         { tipo: "subtitulo", texto: "Respuestas rápidas de WhatsApp Business" },
         {
@@ -441,6 +545,13 @@ export const charla = {
           fuente:
             "Harvard Business Review, “The Short Life of Online Sales Leads” (2011).",
         },
+        {
+          tipo: "subseccion",
+          etiqueta: "9b",
+          titulo: "Tu catálogo en WhatsApp Business",
+          texto:
+            "Cargá cada propiedad como si fuera un producto, con fotos, precio y descripción. Cuando te preguntan, la mandás en un toque, sin buscar fotos en la galería.",
+        },
       ],
     },
 
@@ -448,17 +559,17 @@ export const charla = {
       numero: 10,
       pregunta: "¿Para qué es esta conversación?",
       respuesta:
-        "No es para pasar información. Es para conseguir una llamada o una visita.",
+        "Tené un objetivo: una reunión para asesorarlo y encontrar su mejor opción.",
       bloques: [
         {
           tipo: "parrafo",
           texto:
-            "El objetivo del primer contacto es una conversación más personal, donde el cliente se sienta atendido. Para que sea fácil, usá un llamado a la acción (CTA): una propuesta concreta y simple de qué hacer ahora.",
+            "No es para pasar información. El objetivo del primer contacto es una conversación más personal (una llamada, una visita o una reunión) donde el cliente se sienta asesorado. Para que sea fácil, usá un llamado a la acción: una propuesta concreta y simple de qué hacer ahora.",
         },
         {
           tipo: "parrafo",
           texto:
-            "Secuencia: primero la info de la casa (respuesta rápida); después, en un mensaje aparte y corto, el CTA.",
+            "Secuencia: primero la info de la casa (plantilla); después, en un mensaje aparte y corto, la propuesta.",
         },
         {
           tipo: "chat",
@@ -475,24 +586,48 @@ export const charla = {
             },
           ],
         },
+        {
+          tipo: "callout",
+          variante: "clave",
+          titulo: "Un pie adentro",
+          texto:
+            "Cuando el cliente ya dedicó tiempo y habló con vos, ponerse a buscar otro asesor es un desgaste. Si le simplificás la búsqueda y le acercás las mejores opciones para él, no tiene por qué irse.",
+        },
       ],
     },
 
     {
       numero: 11,
-      pregunta: "¿Por qué se queda conmigo?",
-      respuesta: "Porque ya dio un paso, y buscar otro asesor le cuesta.",
+      pregunta: "¿Y después del primer contacto?",
+      respuesta: "El primer contacto es el punto de partida, no la meta.",
       bloques: [
         {
           tipo: "parrafo",
           texto:
-            "Cuando el cliente se engancha, ya tiene un pie adentro. Ponerse a buscar otro asesor es un desgaste. Si vos le simplificás la búsqueda y le acercás servidas las mejores opciones para él, no tiene por qué irse.",
+            "Muchas oportunidades se mueren en la primera interacción. Para que no pase, necesitás orden y seguimiento.",
+        },
+        {
+          tipo: "checklist",
+          titulo: "Orden",
+          items: [
+            "Registrá a cada contacto en un sistema (el CRM de RE/MAX, las etiquetas de WhatsApp Business o una planilla): un lugar donde ves quién es, por qué te contactó y en qué etapa está.",
+            "Usá etiquetas por etapa. Por ejemplo: Nuevo · Respondido · Visita agendada · En seguimiento · Cerrado.",
+            "Anotá qué propiedad le interesó y qué busca.",
+          ],
+        },
+        {
+          tipo: "checklist",
+          titulo: "Seguimiento",
+          items: [
+            "Poné recordatorios para volver a escribir.",
+            "Reservá un horario fijo en tu semana solo para hacer seguimiento.",
+          ],
         },
         {
           tipo: "callout",
           variante: "clave",
           texto:
-            "Pensá siempre en el objetivo de cada interacción. Y después preguntate: ¿cómo lo hago lo más simple posible?",
+            "En Humand, el CRM era nuestra fuente de verdad: ahí veíamos qué pasaba con cada contacto. Y muchas veces, los buenos contactos se perdían por responder lento o no hacer seguimiento, no por falta de interés.",
         },
         {
           tipo: "destacado",
@@ -502,10 +637,146 @@ export const charla = {
     },
   ] satisfies Paso[],
 
+  // ========================= COMPLEMENTARIAS =========================
+  complementarias: {
+    videos: {
+      id: "videos",
+      antetitulo: "Paso 7 · Extra",
+      titulo: "Grabá videos que funcionen, sin estudio de grabación",
+      bloques: [
+        {
+          tipo: "callout",
+          variante: "clave",
+          texto:
+            "Además de mostrar lo que le importa a tu audiencia, lo más importante es: la luz, el audio y la calidad de la imagen.",
+        },
+        {
+          tipo: "tarjetas",
+          items: [
+            { titulo: "Un micrófono inalámbrico", texto: "tipo DJI Mic" },
+            { titulo: "Un buen celular" },
+            { titulo: "Edición en CapCut" },
+          ],
+          pie: "Con eso alcanza.",
+        },
+        {
+          tipo: "checklist",
+          items: [
+            "Andá con un plan: antes de grabar, definí qué vas a mostrar y qué vas a decir.",
+            "¿No tenés micrófono? Grabá las tomas y poné la voz en off después.",
+            "La edición no es difícil: CapCut es simple y muchos jóvenes ya lo usan.",
+          ],
+        },
+      ],
+    } satisfies Complementaria,
+
+    tercerizar: {
+      id: "tercerizar",
+      antetitulo: "Paso 7 · Extra",
+      titulo: "Tercerizá lo que te exceda",
+      respuesta:
+        "Si algo te consume mucho tiempo o no te sale, delegalo. No tiene por qué ser caro.",
+      bloques: [
+        {
+          tipo: "lista",
+          items: [
+            "Podés contratar a un creador de contenido que conozcas (hay muchísimos) para que te ayude con los primeros videos. Además de grabar, vas entendiendo cómo se hace.",
+            "No hace falta un estudio de grabación profesional.",
+            "La edición también se puede delegar, por ejemplo, a alguien joven que ya maneje CapCut.",
+          ],
+        },
+      ],
+    } satisfies Complementaria,
+
+    consistencia: {
+      id: "consistencia",
+      antetitulo: "Extra",
+      titulo: "Todo esto funciona si sos consistente",
+      respuesta:
+        "Mejor poco y sostenido que mucho una semana y después nada.",
+      bloques: [
+        {
+          tipo: "listaDef",
+          items: [
+            {
+              termino: "En tu perfil",
+              detalle:
+                "siempre el mismo tema y una línea de formato. La gente te sigue por lo que prometés mostrar.",
+            },
+            {
+              termino: "En tu contenido",
+              detalle:
+                "un ritmo de publicación que puedas sostener, con el que te sientas cómodo.",
+            },
+            {
+              termino: "En tus contactos",
+              detalle:
+                "responder y hacer seguimiento siempre, no solo cuando tenés tiempo.",
+            },
+          ],
+        },
+      ],
+    } satisfies Complementaria,
+  },
+
   // ========================= CIERRE (#cierre) =========================
-  // El recorrido de las 11 preguntas se genera a partir de charla.pasos.
   cierre: {
-    titulo: "El sistema completo",
+    titulo: "Tu proceso, completo",
+    bajada: "Ahora que lo tenés armado, el trabajo es pulir cada etapa.",
+    resumen: [
+      { numero: 1, pregunta: "¿Qué tengo que hacer?", respuesta: "Vender una casa." },
+      {
+        numero: 2,
+        pregunta: "¿A quién se la quiero vender?",
+        respuesta: "Definí tu audiencia.",
+      },
+      {
+        numero: 3,
+        pregunta: "¿Dónde está esa gente y cómo llego a la mayor cantidad?",
+        respuesta: "RE/MAX + tu marketing personal.",
+      },
+      {
+        numero: 4,
+        pregunta: "¿Qué canal sumo además de RE/MAX?",
+        respuesta:
+          "El que, con menos esfuerzo y tus recursos, te lleve a más gente de tu audiencia.",
+      },
+      {
+        numero: 5,
+        pregunta: "¿Qué necesito para abrir ese canal?",
+        respuesta: "Un perfil bien armado y separado del personal.",
+      },
+      {
+        numero: 6,
+        pregunta: "¿Tengo que inventar todo desde cero?",
+        respuesta: "No: benchmark.",
+      },
+      {
+        numero: 7,
+        pregunta: "¿Qué le muestro a ese comprador?",
+        respuesta: "La info que quiere ver, en reels y carruseles.",
+      },
+      {
+        numero: 8,
+        pregunta: "¿Cómo hago que me contacten?",
+        respuesta: "Un toque hasta tu WhatsApp.",
+      },
+      {
+        numero: 9,
+        pregunta: "¿Qué información va a necesitar?",
+        respuesta: "Preparada en plantillas y catálogo.",
+      },
+      {
+        numero: 10,
+        pregunta: "¿Para qué es esta conversación?",
+        respuesta: "Una reunión para asesorarlo.",
+      },
+      {
+        numero: 11,
+        pregunta: "¿Y después del primer contacto?",
+        respuesta: "Orden y seguimiento.",
+      },
+    ],
     enConstruccion: { titulo: "Tarea para esta semana (a definir)" },
   },
 };

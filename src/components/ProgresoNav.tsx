@@ -1,26 +1,19 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { charla } from "@/content/charla";
-
-// Orden de las secciones, para la navegación con teclado.
-const IDS = [
-  "inicio",
-  "mapa",
-  ...charla.pasos.map((p) => `paso-${p.numero}`),
-  "cierre",
-];
-const TOTAL = charla.pasos.length;
+import { SECCIONES, IDS } from "@/lib/secciones";
 
 /**
  * Dos cosas en un solo componente:
  *  1) Navegación con teclado para presentar (flechas / espacio / RePág-AvPág).
- *  2) Indicador fijo y discreto "Paso X de 11" + barra de progreso.
- *     Se oculta en el hero, en el mapa y en el cierre.
+ *  2) Indicador fijo y discreto arriba, según la sección actual.
+ *
+ * El orden de las secciones y qué muestra el indicador en cada una
+ * se definen en src/lib/secciones.ts.
  */
 export default function ProgresoNav() {
-  const [current, setCurrent] = useState("inicio");
-  const currentRef = useRef("inicio");
+  const [current, setCurrent] = useState(IDS[0]);
+  const currentRef = useRef(IDS[0]);
 
   // --- Detectar qué sección se está viendo ---
   useEffect(() => {
@@ -97,10 +90,10 @@ export default function ProgresoNav() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  // El indicador se muestra solo en los pasos (no en hero / mapa / cierre).
-  const match = current.match(/^paso-(\d+)$/);
-  const visible = match !== null;
-  const n = match ? Number(match[1]) : 0;
+  // El indicador se muestra según la sección actual (ver secciones.ts).
+  const indicador =
+    SECCIONES.find((s) => s.id === current)?.indicador ?? null;
+  const visible = indicador !== null;
 
   return (
     <div
@@ -113,13 +106,13 @@ export default function ProgresoNav() {
       <div className="h-1 w-full bg-linea">
         <div
           className="h-full bg-acento transition-[width] duration-500 ease-out"
-          style={{ width: `${(n / TOTAL) * 100}%` }}
+          style={{ width: `${(indicador?.progreso ?? 0) * 100}%` }}
         />
       </div>
-      {/* Etiqueta "Paso X de 11" */}
+      {/* Etiqueta */}
       <div className="flex justify-end px-4 pt-2">
         <span className="rounded-full bg-tinta/85 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-white backdrop-blur">
-          Paso {n} de {TOTAL}
+          {indicador?.label ?? ""}
         </span>
       </div>
     </div>

@@ -1,8 +1,9 @@
 import { charla } from "@/content/charla";
 import Section from "./Section";
+import ProcesoIterativo from "./ProcesoIterativo";
 
 export default function Mapa() {
-  const { titulo, bajada } = charla.mapa;
+  const { titulo, bajada, proceso } = charla.mapa;
 
   return (
     <Section id="mapa" contentClassName="max-w-4xl">
@@ -13,6 +14,12 @@ export default function Mapa() {
         {bajada}
       </p>
 
+      {/* Mini proceso iterativo (3 pasos) */}
+      <div className="mt-8 rounded-2xl border border-linea bg-tarjeta px-6 py-6">
+        <ProcesoIterativo pasos={proceso} />
+      </div>
+
+      {/* Las 11 preguntas (solo preguntas, clickeables) */}
       <ol className="mt-10 grid gap-3 sm:grid-cols-2">
         {charla.pasos.map((paso) => (
           <li key={paso.numero}>
