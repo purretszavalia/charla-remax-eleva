@@ -5,6 +5,8 @@ charla y para compartir el link después.
 
 **En vivo:** https://charla-remax-eleva.vercel.app
 
+Conectado a Vercel con auto-deploy: cada `push` a `main` se publica solo.
+
 ## Correr en tu compu
 
 Node y npm están en `~/.local/node/bin`. En una terminal nueva, primero:
