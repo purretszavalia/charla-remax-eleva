@@ -1,14 +1,16 @@
-import type { BloqueChat } from "@/content/charla";
-
 /**
- * Conversación tipo chat. El cliente aparece a la izquierda y el
- * asesor a la derecha. Estilo genérico, sin logos de ninguna app.
+ * Conversación tipo chat (cliente a la izquierda, asesor a la derecha).
+ * Estilo genérico, sin logos. Pensado para el lienzo (1920×1080).
  */
-export default function ChatMock({ bloque }: { bloque: BloqueChat }) {
+export default function ChatMock({
+  mensajes,
+}: {
+  mensajes: { de: "cliente" | "asesor"; texto: string }[];
+}) {
   return (
-    <div className="mx-auto w-full max-w-md rounded-2xl border border-linea bg-tarjeta p-4 shadow-sm">
-      <div className="flex flex-col gap-3">
-        {bloque.mensajes.map((msg, i) => {
+    <div className="mx-auto w-full max-w-[1100px] rounded-3xl border border-linea bg-tarjeta p-10 shadow-sm">
+      <div className="flex flex-col gap-6">
+        {mensajes.map((msg, i) => {
           const esAsesor = msg.de === "asesor";
           return (
             <div
@@ -16,13 +18,13 @@ export default function ChatMock({ bloque }: { bloque: BloqueChat }) {
               className={`flex ${esAsesor ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-base leading-relaxed ${
+                className={`max-w-[78%] rounded-3xl px-8 py-6 text-[32px] leading-relaxed ${
                   esAsesor
-                    ? "rounded-br-sm bg-azul text-white"
-                    : "rounded-bl-sm bg-fondo text-tinta"
+                    ? "rounded-br-lg bg-azul text-white"
+                    : "rounded-bl-lg bg-fondo text-tinta"
                 }`}
               >
-                <span className="mb-1 block text-xs font-semibold uppercase tracking-wide opacity-70">
+                <span className="mb-2 block text-[20px] font-semibold uppercase tracking-wide opacity-70">
                   {esAsesor ? "Asesor" : "Cliente"}
                 </span>
                 {msg.texto}

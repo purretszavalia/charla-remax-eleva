@@ -1,6 +1,6 @@
 /**
  * Tres pasos horizontales numerados y conectados (se apilan en mobile).
- * Representa el ciclo: entender → anotar → mejorar.
+ * Pensado para el lienzo de la presentación (1920×1080).
  */
 export default function ProcesoIterativo({
   pasos,
@@ -8,20 +8,16 @@ export default function ProcesoIterativo({
   pasos: { titulo: string }[];
 }) {
   return (
-    <ol className="grid gap-4 md:grid-cols-3 md:gap-0">
+    <ol className="grid gap-8 md:grid-cols-3">
       {pasos.map((paso, i) => (
-        <li key={i} className="relative flex items-start gap-4 md:flex-col md:gap-3 md:px-5">
-          {/* Línea conectora (solo desktop, entre tarjetas) */}
-          {i < pasos.length - 1 && (
-            <span
-              aria-hidden
-              className="absolute left-4 top-9 hidden h-[2px] w-full bg-linea md:block"
-            />
-          )}
-          <span className="relative z-10 flex h-9 w-9 flex-none items-center justify-center rounded-full bg-acento text-base font-bold text-white">
+        <li
+          key={i}
+          className="relative flex flex-col items-start gap-6 rounded-2xl border border-linea bg-tarjeta p-10"
+        >
+          <span className="flex h-16 w-16 flex-none items-center justify-center rounded-full bg-acento text-[32px] font-bold text-white">
             {i + 1}
           </span>
-          <p className="pt-1 text-lg font-medium text-tinta md:pt-0">
+          <p className="text-[34px] font-medium leading-snug text-tinta">
             {paso.titulo}
           </p>
         </li>

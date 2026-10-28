@@ -3,26 +3,25 @@
 /* ============================================================
    TOKENS DE DISEÑO
    Todo el aspecto visual (colores, tipografía) se controla acá.
-   Cambiar un color acá lo cambia en toda la web.
+   Cambiar un color acá lo cambia en toda la presentación.
    Paleta PROVISIONAL — la ajustamos a la identidad de RE/MAX.
    ============================================================ */
 :root {
-  /* Colores base */
   --color-fondo: #fafaf7; /* fondo blanco cálido */
   --color-tinta: #141414; /* texto casi negro */
   --color-gris: #5c5c5c; /* texto secundario */
   --color-acento: #d7263d; /* rojo */
   --color-azul: #1b3a6b; /* azul profundo (secundario) */
 
-  /* Tonos derivados para fondos suaves de los recuadros */
   --color-acento-suave: #fdecef; /* rojo muy claro */
   --color-azul-suave: #eaf0f8; /* azul muy claro */
   --color-linea: #e7e6e0; /* líneas y bordes sutiles */
   --color-tarjeta: #ffffff; /* superficie de tarjetas */
+  --color-banda: #0d0d0f; /* banda detrás del lienzo (proyección) */
 }
 
 /* Conecta los tokens con Tailwind: habilita clases como
-   bg-fondo, text-tinta, text-acento, border-linea, etc. */
+   bg-fondo, text-tinta, text-acento, bg-banda, border-linea, etc. */
 @theme inline {
   --color-fondo: var(--color-fondo);
   --color-tinta: var(--color-tinta);
@@ -33,6 +32,7 @@
   --color-azul-suave: var(--color-azul-suave);
   --color-linea: var(--color-linea);
   --color-tarjeta: var(--color-tarjeta);
+  --color-banda: var(--color-banda);
 
   --font-sans: var(--font-inter), system-ui, sans-serif;
 }
@@ -40,10 +40,6 @@
 /* ============================================================
    BASE
    ============================================================ */
-html {
-  scroll-behavior: smooth;
-}
-
 body {
   background: var(--color-fondo);
   color: var(--color-tinta);
@@ -53,31 +49,78 @@ body {
 }
 
 /* ============================================================
-   ANIMACIÓN DE ENTRADA
-   Cada sección aparece con un fade + leve desplazamiento.
-   .reveal = estado inicial (oculto), .is-visible = estado final.
+   TRANSICIÓN ENTRE SLIDES (fade corto)
    ============================================================ */
-.reveal {
-  opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.7s ease,
-    transform 0.7s ease;
-}
-
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Respeta a quien pidió menos movimiento: sin animación ni scroll suave. */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+@keyframes slideFade {
+  from {
+    opacity: 0;
   }
-  .reveal {
+  to {
     opacity: 1;
-    transform: none;
-    transition: none;
+  }
+}
+
+.slide-fade {
+  animation: slideFade 0.35s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide-fade {
+    animation: none;
+  }
+}
+
+/* ============================================================
+   IMPRESIÓN / EXPORTAR A PDF (desde /leer)
+   Una slide por página, horizontal, sin notas ni cromo.
+   Probado para "Guardar como PDF" en Chrome.
+   ============================================================ */
+@media print {
+  @page {
+    size: 1280px 720px;
+    margin: 0;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  .no-print,
+  .leer-slide .notas-print {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .leer-slide {
+    margin: 0 !important;
+    break-after: page;
+  }
+  .leer-slide:last-child {
+    break-after: auto;
+  }
+
+  /* El recuadro que envuelve la slide: sin borde ni sombra al imprimir. */
+  .leer-slide > div:first-child {
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Forzar el lienzo a 1280×720 (la medida de la página). */
+  .leer-slide .scaler-wrap {
+    width: 1280px !important;
+    height: 720px !important;
+    aspect-ratio: auto !important;
+  }
+  .leer-slide .scaler-inner {
+    transform: scale(0.6666667) !important;
+    transform-origin: top left !important;
+    opacity: 1 !important;
   }
 }
