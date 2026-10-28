@@ -3,6 +3,8 @@
 One pager de la charla, hecho en Next.js. Pensado para proyectar durante la
 charla y para compartir el link después.
 
+**En vivo:** https://charla-remax-eleva.vercel.app
+
 ## Correr en tu compu
 
 Node y npm están en `~/.local/node/bin`. En una terminal nueva, primero:
