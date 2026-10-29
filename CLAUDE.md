@@ -70,13 +70,13 @@ Cada slide tiene:
 
 ## Barra de etapas (hilo conductor)
 
-- En las slides **3 a 12**, arriba, una barra fina con las 4 etapas. La etapa
+- En las slides **3 a 13**, arriba, una barra fina con las 4 etapas. La etapa
   actual va en **acento**; las demás, en gris. Se define con el campo `etapa`
   de cada slide (orden en `ETAPAS`, dentro de `slides.ts`).
 - En la slide **2**, las 4 etapas son el contenido principal (layout `proceso`).
 - En la slide **1** no hay barra.
-- Asignación actual: slides 3–8 → Mostrar · 9 → Contactar · 10–11 → Acompañar ·
-  12 → Cerrar.
+- Asignación actual: slides 3–9 → Mostrar · 10 → Contactar · 11–12 → Acompañar ·
+  13 → Cerrar.
 
 ## Navegación (en vivo)
 
@@ -84,7 +84,7 @@ Cada slide tiene:
 - `Inicio` / `Fin`: primera / última. `F`: pantalla completa.
 - Compatible con clickers inalámbricos (mandan AvPág/RePág).
 - La URL refleja la slide (`#5`): al recargar, volvés a la misma.
-- Número de slide discreto abajo a la derecha ("5 / 12").
+- Número de slide discreto abajo a la derecha ("5 / 13").
 
 ## Exportar a PDF
 
@@ -106,7 +106,10 @@ Cada slide tiene:
 - Máximo ~6 ítems y ~45 palabras visibles por slide. Si algo no entra, avisar en
   vez de achicar la letra.
 - Transición entre slides: fade corto, respetando `prefers-reduced-motion`.
-- **Sin logos** (RE/MAX, WhatsApp, Instagram). Los mockups son genéricos.
+- **Sin logos.** Los mockups son genéricos. **Única excepción:** los íconos de
+  redes de la **slide 3** (Instagram, Facebook, TikTok, Email, WhatsApp), que
+  salen de una librería (`react-icons`), todos del mismo tamaño y en gris (sin
+  los colores de cada marca). **El logo de RE/MAX nunca se usa.**
 
 ## Reglas de tono (texto visible)
 

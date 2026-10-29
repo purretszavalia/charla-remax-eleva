@@ -1,5 +1,45 @@
+import type { IconType } from "react-icons";
+import {
+  FaInstagram,
+  FaFacebookF,
+  FaTiktok,
+  FaWhatsapp,
+  FaEnvelope,
+} from "react-icons/fa6";
 import type { Slide } from "@/content/slides";
 import StageBar from "./StageBar";
+
+/**
+ * Íconos de redes — EXCEPCIÓN a la regla de "sin logos", solo en la slide 3.
+ * Librería (react-icons), no dibujados a mano. Todos del mismo tamaño,
+ * en gris (sin los colores de cada marca) para que no compitan con el texto.
+ * Nunca se usa el logo de RE/MAX.
+ */
+const REDES: Record<string, { Icono: IconType; nombre: string }> = {
+  instagram: { Icono: FaInstagram, nombre: "Instagram" },
+  facebook: { Icono: FaFacebookF, nombre: "Facebook" },
+  tiktok: { Icono: FaTiktok, nombre: "TikTok" },
+  email: { Icono: FaEnvelope, nombre: "Email" },
+  whatsapp: { Icono: FaWhatsapp, nombre: "WhatsApp" },
+};
+
+function RedesFila({ redes }: { redes: string[] }) {
+  return (
+    <div className="mb-8 flex flex-wrap items-start gap-10">
+      {redes.map((key) => {
+        const r = REDES[key];
+        if (!r) return null;
+        const { Icono, nombre } = r;
+        return (
+          <div key={key} className="flex flex-col items-center gap-2 text-gris">
+            <Icono size={56} aria-hidden />
+            <span className="text-[24px]">{nombre}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 /**
  * Dibuja UNA slide en el lienzo fijo de 1920×1080, según su `layout`.
@@ -18,7 +58,7 @@ export default function SlideView({ slide }: { slide: Slide }) {
         </div>
       )}
       <div
-        className="flex flex-1 flex-col justify-center"
+        className="flex min-h-0 flex-1 flex-col justify-center"
         style={{ padding: "48px 140px 80px" }}
       >
         {contenido(slide)}
@@ -34,6 +74,20 @@ function Vineta() {
       aria-hidden
       className="mt-[20px] h-4 w-4 flex-none rounded-full bg-acento"
     />
+  );
+}
+
+/* Pinta en color de acento el trozo `clave` dentro de `texto` (si aparece). */
+function resaltar(texto: string, clave?: string) {
+  if (!clave) return texto;
+  const i = texto.indexOf(clave);
+  if (i === -1) return texto;
+  return (
+    <>
+      {texto.slice(0, i)}
+      <span className="font-semibold text-acento">{clave}</span>
+      {texto.slice(i + clave.length)}
+    </>
   );
 }
 
@@ -123,6 +177,7 @@ function contenido(s: Slide) {
                       {col.titulo}
                     </p>
                   )}
+                  {col.redes && <RedesFila redes={col.redes} />}
                   {col.items && <Lista items={col.items} size={36} />}
                   {col.etiqueta && (
                     <span className="mt-8 inline-block w-fit rounded-full bg-acento-suave px-6 py-3 text-[28px] font-semibold text-acento">
@@ -194,13 +249,20 @@ function contenido(s: Slide) {
             {s.frase}
           </p>
           {s.intro && (
-            <p className="mt-12 text-[42px] text-tinta">{s.intro}</p>
+            <p className="mt-12 text-[42px] text-tinta">
+              {resaltar(s.intro, s.introResaltar)}
+            </p>
           )}
           <div className="mt-6">
             <Lista items={s.items ?? []} />
           </div>
+          {s.cierre && (
+            <p className="mt-8 text-[56px] font-bold leading-tight tracking-tight text-acento">
+              {s.cierre}
+            </p>
+          )}
           {s.pie && (
-            <p className="mt-12 text-[44px] font-semibold leading-snug text-azul">
+            <p className="mt-10 text-[44px] font-semibold leading-snug text-azul">
               {s.pie}
             </p>
           )}
@@ -398,6 +460,21 @@ function contenido(s: Slide) {
               </div>
             )}
           </div>
+        </div>
+      );
+
+    // ---------------------------------------------------------- imagen
+    case "imagen":
+      return (
+        <div className="flex min-h-0 w-full flex-1 items-center justify-center">
+          {s.imagen && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={s.imagen.src}
+              alt={s.imagen.alt}
+              className="max-h-full max-w-full rounded-3xl border border-linea object-contain shadow-sm"
+            />
+          )}
         </div>
       );
 

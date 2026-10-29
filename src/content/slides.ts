@@ -31,13 +31,17 @@ export type Layout =
   | "lista-tips"
   | "comparacion"
   | "chat"
-  | "lista-dato";
+  | "lista-dato"
+  | "imagen";
 
 /** Una columna (layout dos-columnas). */
 export type Columna = {
   titulo?: string;
   items?: string[];
   etiqueta?: string; // etiqueta destacada al pie de la columna
+  // Fila de íconos de redes (solo se usa en la slide 3).
+  // Son claves, no logos: "instagram" | "facebook" | "tiktok" | "email" | "whatsapp".
+  redes?: string[];
 };
 
 export type Slide = {
@@ -62,6 +66,11 @@ export type Slide = {
 
   // destacado-lista
   frase?: string;
+  introResaltar?: string; // substring de `intro` a pintar en color de acento
+  cierre?: string; // conclusión corta, separada de la lista (ej.: "Copialo.")
+
+  // imagen (slide a pantalla con una sola imagen)
+  imagen?: { src: string; alt: string };
 
   // dos-columnas
   col1?: Columna;
@@ -123,17 +132,18 @@ export const slides: Slide[] = [
     id: "donde-encuentro",
     etapa: "Mostrar",
     layout: "dos-columnas",
-    titulo: "¿Dónde encuentro gente interesada para mostrar la casa?",
+    titulo: "¿Dónde encuentro gente interesada y calificada para mostrar la casa?",
     col1: {
       titulo: "1. La red RE/MAX",
       items: [
-        "La más obvia: tiene un interés evidente.",
+        "La más obvia: tiene un interés e intención evidente.",
         "Asegurate de que esté lo mejor posible: buenas fotos, buena descripción, siguiendo la guía de RE/MAX.",
       ],
       etiqueta: "Poco esfuerzo · Alto impacto",
     },
     col2: {
-      titulo: "2. Amplificar tu alcance",
+      titulo: "2. Otros canales",
+      redes: ["instagram", "facebook", "tiktok", "email", "whatsapp"],
       items: [
         "Hay muchas opciones, y cada una cuesta tiempo y foco.",
         "Elegí 1 canal y hacete fuerte ahí.",
@@ -151,7 +161,7 @@ export const slides: Slide[] = [
     layout: "lista-conclusion",
     titulo: "¿Cómo elijo ese canal?",
     items: [
-      "Preguntale a los vendedores qué les funciona más",
+      "Preguntale a otros vendedores a los que les vaya bien cuál usan.",
       "¿Cuál tiene menor barrera de entrada para vos?",
       "¿Cuál te da más alcance con menos esfuerzo?",
     ],
@@ -173,7 +183,7 @@ export const slides: Slide[] = [
     titulo: "¿Qué necesito para mostrar la casa en ese canal?",
     tarjetas: [
       { numero: 1, texto: "Un perfil" },
-      { numero: 2, texto: "Contenido de tus casas" },
+      { numero: 2, texto: "Contenido" },
     ],
     notas:
       "Dos cosas. Para las dos, antes de arrancar, mirá a quién ya le funciona (slide siguiente).",
@@ -186,10 +196,16 @@ export const slides: Slide[] = [
     layout: "destacado-lista",
     frase: "No hay que reinventar la rueda.",
     intro: "Buscá gente a la que le esté yendo bien y analizala:",
-    items: ["¿Qué le funciona?", "¿Qué repite?", "Copialo."],
+    introResaltar: "yendo bien",
+    items: [
+      "¿Cómo tienen configurado su perfil?",
+      "¿Qué contenido suben más seguido?",
+      "¿Qué repiten?",
+    ],
+    cierre: "Copialo.",
     pie: "Ellos ya aprendieron qué funciona y qué no. Ahorrate ese camino.",
     notas:
-      "Elegí unos 5 referentes. Mirá sus publicaciones con más vistas, cómo muestran las casas, cada cuánto publican, cómo armaron el perfil.",
+      "Elegí unos 5 referentes. Mirá cómo armaron el perfil (foto, nombre, bio, link, destacadas), sus publicaciones con más vistas, cómo muestran las casas y cada cuánto publican.",
   },
 
   // ------------------------------------------------- 7 · Un perfil bien hecho
@@ -230,7 +246,20 @@ export const slides: Slide[] = [
       "Cuenta profesional: te da estadísticas y botones de contacto, incluido el de WhatsApp. El nombre es lo que aparece cuando alguien busca, por eso lleva qué hacés y dónde. Prompt para la foto: “Mejorá esta foto para usarla como foto de perfil profesional: fondo neutro, buena luz, encuadre de hombros para arriba. Mantené mi cara exactamente igual, sin cambiar mis rasgos.” Si sigo una cuenta de casas y me sube el cumpleaños del sobrino, la dejo de seguir.",
   },
 
-  // ------------------------------------------------- 8 · Contenido: ¿cómo lo subo?
+  // ------------------------------------------------- 8 · Ejemplo de perfil (imagen)
+  {
+    id: "perfil-ejemplo",
+    etapa: "Mostrar",
+    layout: "imagen",
+    imagen: {
+      src: "/perfil-ejemplo.webp",
+      alt: "Ejemplo de un perfil de asesor inmobiliario en Instagram",
+    },
+    notas:
+      "Un ejemplo armado de cómo quedaría el perfil aplicando todo lo anterior: foto, nombre con qué hacés y zona, bio con llamado a WhatsApp, link, destacadas y publicaciones de propiedades.",
+  },
+
+  // ------------------------------------------------- 9 · Contenido: ¿cómo lo subo?
   {
     id: "contenido",
     etapa: "Mostrar",
@@ -250,7 +279,7 @@ export const slides: Slide[] = [
       "No es lo mismo un depto en Nueva Córdoba (cerca de facultades, transporte, seguridad) que una casa en un country (espacios grandes, lugares para compartir, cocina). Con un buen celular, un micrófono inalámbrico y CapCut alcanza.",
   },
 
-  // ------------------------------------------------- 9 · Contactar: reducí fricciones
+  // ------------------------------------------------- 10 · Contactar: reducí fricciones
   {
     id: "contactar",
     etapa: "Contactar",
@@ -276,7 +305,7 @@ export const slides: Slide[] = [
       "Fricción es cada paso extra que tiene que hacer el cliente. Cada paso te hace perder consultas. También podés sumar el botón de WhatsApp en el perfil (cuenta profesional + WhatsApp Business, desde Editar perfil → Opciones de contacto). En los reels el link del texto no se puede tocar: decí “escribime desde el botón de WhatsApp de mi perfil”.",
   },
 
-  // ------------------------------------------------- 10 · Acompañar: preparate para las dudas
+  // ------------------------------------------------- 11 · Acompañar: preparate para las dudas
   {
     id: "acompanar",
     etapa: "Acompañar",
@@ -301,7 +330,7 @@ export const slides: Slide[] = [
       "Las preguntas típicas son precio, expensas, metros, si es apta crédito, ubicación y horarios de visita. Escribilas una vez.",
   },
 
-  // ------------------------------------------------- 11 · El objetivo de la interacción
+  // ------------------------------------------------- 12 · El objetivo de la interacción
   {
     id: "objetivo",
     etapa: "Acompañar",
@@ -322,7 +351,7 @@ export const slides: Slide[] = [
       "En esa reunión conocés al cliente y sus intenciones. Puede que esa casa sea la mejor para él, o que puedas asesorarlo con otra. Primero la info, después la propuesta en un mensaje aparte.",
   },
 
-  // ------------------------------------------------- 12 · Seguimiento
+  // ------------------------------------------------- 13 · Seguimiento
   {
     id: "seguimiento",
     etapa: "Cerrar",
