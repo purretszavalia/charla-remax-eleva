@@ -478,6 +478,22 @@ function contenido(s: Slide) {
         </div>
       );
 
+    // ---------------------------------------------------------- imagenes (fila)
+    case "imagenes":
+      return (
+        <div className="flex min-h-0 w-full flex-1 items-center justify-center gap-10">
+          {(s.imagenes ?? []).map((im) => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={im.src}
+              src={im.src}
+              alt={im.alt}
+              className="max-h-full max-w-full rounded-3xl border border-linea object-contain shadow-sm"
+            />
+          ))}
+        </div>
+      );
+
     default:
       return null;
   }

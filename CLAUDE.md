@@ -66,17 +66,18 @@ Cada slide tiene:
 
 `portada` · `proceso` (las 4 etapas) · `dos-columnas` · `lista-conclusion` ·
 `dos-tarjetas` · `destacado-lista` · `perfil-mockup` · `lista-tips` ·
-`comparacion` · `chat` · `lista-dato`.
+`comparacion` · `chat` · `lista-dato` · `imagen` (una imagen) · `imagenes`
+(varias imágenes en fila).
 
 ## Barra de etapas (hilo conductor)
 
-- En las slides **3 a 13**, arriba, una barra fina con las 4 etapas. La etapa
+- En las slides **3 a 14**, arriba, una barra fina con las 4 etapas. La etapa
   actual va en **acento**; las demás, en gris. Se define con el campo `etapa`
   de cada slide (orden en `ETAPAS`, dentro de `slides.ts`).
 - En la slide **2**, las 4 etapas son el contenido principal (layout `proceso`).
 - En la slide **1** no hay barra.
-- Asignación actual: slides 3–9 → Mostrar · 10 → Contactar · 11–12 → Acompañar ·
-  13 → Cerrar.
+- Asignación actual: slides 3–9 → Mostrar · 10 → Contactar · 11–13 → Acompañar ·
+  14 → Cerrar.
 
 ## Navegación (en vivo)
 
@@ -84,7 +85,7 @@ Cada slide tiene:
 - `Inicio` / `Fin`: primera / última. `F`: pantalla completa.
 - Compatible con clickers inalámbricos (mandan AvPág/RePág).
 - La URL refleja la slide (`#5`): al recargar, volvés a la misma.
-- Número de slide discreto abajo a la derecha ("5 / 13").
+- Número de slide discreto abajo a la derecha ("5 / 14").
 
 ## Exportar a PDF
 

@@ -32,7 +32,8 @@ export type Layout =
   | "comparacion"
   | "chat"
   | "lista-dato"
-  | "imagen";
+  | "imagen"
+  | "imagenes";
 
 /** Una columna (layout dos-columnas). */
 export type Columna = {
@@ -71,6 +72,9 @@ export type Slide = {
 
   // imagen (slide a pantalla con una sola imagen)
   imagen?: { src: string; alt: string };
+
+  // imagenes (varias imágenes en fila, a pantalla)
+  imagenes?: { src: string; alt: string }[];
 
   // dos-columnas
   col1?: Columna;
@@ -330,7 +334,30 @@ export const slides: Slide[] = [
       "Las preguntas típicas son precio, expensas, metros, si es apta crédito, ubicación y horarios de visita. Escribilas una vez.",
   },
 
-  // ------------------------------------------------- 12 · El objetivo de la interacción
+  // ------------------------------------------------- 12 · Ejemplo: WhatsApp Business (imágenes)
+  {
+    id: "whatsapp-ejemplo",
+    etapa: "Acompañar",
+    layout: "imagenes",
+    imagenes: [
+      {
+        src: "/whatsapp-info.webp",
+        alt: "Perfil de empresa en WhatsApp Business de una inmobiliaria",
+      },
+      {
+        src: "/whatsapp-catalogo.webp",
+        alt: "Catálogo de propiedades en WhatsApp Business",
+      },
+      {
+        src: "/whatsapp-ficha.webp",
+        alt: "Ficha de una propiedad del catálogo de WhatsApp Business",
+      },
+    ],
+    notas:
+      "Ejemplo real: perfil de empresa, catálogo de propiedades y la ficha de una propiedad lista para mandar en un toque.",
+  },
+
+  // ------------------------------------------------- 13 · El objetivo de la interacción
   {
     id: "objetivo",
     etapa: "Acompañar",
@@ -351,7 +378,7 @@ export const slides: Slide[] = [
       "En esa reunión conocés al cliente y sus intenciones. Puede que esa casa sea la mejor para él, o que puedas asesorarlo con otra. Primero la info, después la propuesta en un mensaje aparte.",
   },
 
-  // ------------------------------------------------- 13 · Seguimiento
+  // ------------------------------------------------- 14 · Seguimiento
   {
     id: "seguimiento",
     etapa: "Cerrar",
