@@ -5,34 +5,18 @@ cuando cambie algo estructural (carpetas, stack, flujo de deploy).
 
 ## Contexto del proyecto
 
-Presentación (deck de slides) para una charla de **marketing y proceso de
-ventas** dirigida a asesores inmobiliarios de **RE/MAX Eleva** (Córdoba,
-Argentina). La mayoría no viene de marketing ni ventas. La charla simplifica
-el proceso de venta: de "tengo una casa para vender" a "coordiné una reunión
-con un comprador", como una cadena de **11 preguntas**, y el objetivo nunca
-son los contactos sino las ventas.
+Presentación de slides para una charla dirigida a asesores inmobiliarios de
+**RE/MAX Eleva** (Córdoba, Argentina): **"Simplificando el Marketing y Proceso
+de ventas"**. La mayoría de los asesores no viene de marketing ni ventas y está
+abrumada por la cantidad de información. La charla simplifica el proceso de
+vender una casa en cuatro etapas claras: **Mostrar · Contactar · Acompañar ·
+Cerrar**.
 
-La web tiene tres usos:
+El presentador es **experto en marketing, no en venta inmobiliaria**: nunca
+escribir texto que lo presente como experto en vender casas.
 
-1. **Proyectar en vivo** (`/`): deck a pantalla completa, navegable con teclado
-   o clicker.
-2. **Ventana del presentador** (`/presentador`): notas + próxima slide + reloj,
-   sincronizada con la proyección.
-3. **Compartir después** (`/leer`): todas las slides con sus notas, para leer
-   desde el celular. Es el link que se comparte con los asesores.
-
-El presentador es **Pedro Urrets**. Pedro es principiante en desarrollo:
-explicar en simple cada paso que requiera algo de su parte.
-
-## Principio clave: una idea por slide
-
-- Cada slide se lee en 5 segundos desde el fondo de una sala.
-- Máximo ~6 ítems y ~40 palabras visibles por slide. Si no entra, se divide en
-  dos slides. **NUNCA** achicar la tipografía para que entre.
-- El texto completo de cada idea vive en las **notas** de la slide. Lo visible
-  es una versión más corta de ese mismo texto.
-- Se puede acortar y recortar, pero **no inventar** ideas ni datos nuevos. Si
-  falta algo, poner `[A COMPLETAR: …]`.
+Pedro es principiante en desarrollo: explicar en simple cada paso que requiera
+algo de su parte (cuentas, logins, comandos).
 
 ## Stack
 
@@ -43,79 +27,70 @@ explicar en simple cada paso que requiera algo de su parte.
   (`purretszavalia/charla-remax-eleva`): cada `push` a `main` se publica solo.
   URL: https://charla-remax-eleva.vercel.app
 
-## Estructura de carpetas
+## Estructura de archivos
 
 ```
 public/
-  pedro.jpg          Foto de Pedro (slide "Quién soy")
+  pedro.jpg          (foto de Pedro; disponible por si se usa más adelante)
 src/
   app/
     layout.tsx       Tipografía (Inter), metadata, <html lang="es">
     globals.css      TOKENS de diseño + transición + estilos de impresión (PDF)
-    page.tsx         La presentación en vivo (renderiza <Deck/>)
-    presentador/
-      page.tsx       Ventana del presentador (/presentador)
-    leer/
-      page.tsx       Modo lectura (/leer): todas las slides + notas
+    page.tsx         Renderiza <Deck/> (en vivo) y <PrintSheet/> (para PDF)
   content/
-    charla.ts        >>> TODO EL CONTENIDO: el array de slides <<<
+    slides.ts        >>> TODO EL CONTENIDO: el array de slides <<<
   components/
-    Deck.tsx         Runtime en vivo: teclado, URL, overview, indicadores, sync
+    Deck.tsx         Runtime en vivo: teclado, URL (#5), número, pantalla completa
     SlideScaler.tsx  Escala el lienzo 1920×1080 (contain / width)
-    SlideView.tsx    Dibuja una slide según su `layout`
-    StatsGrid.tsx    Layout stats (números grandes)
-    ComparacionPasos.tsx  Layout comparacion (dos caminos)
-    ChatMock.tsx     Layout chat (conversación, sin logos)
-    ProcesoIterativo.tsx  Layout proceso (3 pasos conectados)
+    SlideView.tsx    Dibuja una slide según su `layout` (+ barra de etapas)
+    StageBar.tsx     La barra de etapas (Mostrar · Contactar · Acompañar · Cerrar)
+    PrintSheet.tsx   Todas las slides, una por página, solo al imprimir (PDF)
 ```
 
 ## Dónde está el contenido (clave para iterar)
 
-**Todo está en `src/content/charla.ts`: un array `slides`.** El número de slide
+**Todo está en `src/content/slides.ts`: un array `slides`.** El número de slide
 es su posición en el array (la 1ª es la slide 1). Para pedir un cambio:
-"en la slide 23 cambiá X".
+"en la slide 7 cambiá X".
 
 Cada slide tiene:
 - `id` — identificador estable.
-- `seccion` — lo que muestra el indicador arriba a la izquierda (ej. "Paso 7").
+- `etapa` — para la barra de arriba (`Mostrar`/`Contactar`/`Acompañar`/`Cerrar`).
+  Las slides 1 y 2 **no** llevan etapa (no muestran barra).
 - `layout` — qué plantilla usa.
-- `notas` — el texto completo, para el presentador (y el modo lectura).
+- `notas` — texto para el presentador (por ahora no se muestra en pantalla).
 - campos visibles según el layout (documentados con el tipo `Slide` arriba del
   archivo).
 
 ## Layouts disponibles
 
-`portada` · `divisor-paso` (número + pregunta + respuesta) · `lista` ·
-`dos-columnas` · `tabla` · `stats` · `comparacion` · `chat` · `destacado`
-(una frase; `variante: "prompt"` para un bloque de texto) · `tarjetas` (3
-tarjetas) · `grilla-preguntas` · `proceso` · `foto-texto`.
+`portada` · `proceso` (las 4 etapas) · `dos-columnas` · `lista-conclusion` ·
+`dos-tarjetas` · `destacado-lista` · `perfil-mockup` · `lista-tips` ·
+`comparacion` · `chat` · `lista-dato`.
 
-## Navegación (en vivo, `/`)
+## Barra de etapas (hilo conductor)
 
-- Siguiente: `→` `↓` `espacio` `AvPág`. Anterior: `←` `↑` `RePág`.
-- `Inicio` / `Fin`: primera / última slide.
-- `F`: pantalla completa. `O`: vista general (grilla de miniaturas). `P`: abrir
-  la ventana del presentador. `Esc`: cerrar la vista general.
-- Compatible con clickers inalámbricos (mandan AvPág/RePág o flechas).
-- La URL refleja la slide (`#12`): al recargar, volvés a la misma.
-- Indicador: sección arriba a la izquierda, número abajo a la derecha, barra de
-  progreso fina abajo.
+- En las slides **3 a 12**, arriba, una barra fina con las 4 etapas. La etapa
+  actual va en **acento**; las demás, en gris. Se define con el campo `etapa`
+  de cada slide (orden en `ETAPAS`, dentro de `slides.ts`).
+- En la slide **2**, las 4 etapas son el contenido principal (layout `proceso`).
+- En la slide **1** no hay barra.
+- Asignación actual: slides 3–8 → Mostrar · 9 → Contactar · 10–11 → Acompañar ·
+  12 → Cerrar.
 
-## Ventana del presentador (`/presentador`)
+## Navegación (en vivo)
 
-- Muestra la slide actual, la próxima, las notas en grande y un cronómetro con
-  botón de reinicio.
-- Sincronizada con la proyección en ambos sentidos vía `BroadcastChannel`
-  (canal `"charla-deck"`): avanzás en cualquiera de las dos y avanzan las dos.
-- Uso con proyector: abrir `/` en el proyector (pantalla completa con `F`) y
-  `/presentador` en la notebook (o apretar `P` desde la proyección).
+- Siguiente: `→` `espacio` `AvPág`. Anterior: `←` `RePág`.
+- `Inicio` / `Fin`: primera / última. `F`: pantalla completa.
+- Compatible con clickers inalámbricos (mandan AvPág/RePág).
+- La URL refleja la slide (`#5`): al recargar, volvés a la misma.
+- Número de slide discreto abajo a la derecha ("5 / 12").
 
-## Modo lectura (`/leer`) y PDF
+## Exportar a PDF
 
-- `/leer` apila todas las slides con sus notas debajo, responsive.
-- **Exportar a PDF:** desde `/leer`, imprimir con el navegador (Chrome) y
-  "Guardar como PDF": sale una slide por página, horizontal, sin notas ni cromo
-  (ver `@media print` en `globals.css`).
+- Imprimir la página desde el navegador (Chrome → "Guardar como PDF"): sale una
+  slide por página, horizontal, sin controles (ver `@media print` en
+  `globals.css`; la hoja la arma `PrintSheet.tsx`).
 
 ## Reglas de diseño
 
@@ -125,19 +100,20 @@ tarjetas) · `grilla-preguntas` · `proceso` · `foto-texto`.
 - **Paleta PROVISIONAL** (a ajustar a RE/MAX): fondo `#FAFAF7`, texto `#141414`,
   gris `#5C5C5C`, acento rojo `#D7263D`, azul `#1B3A6B`, banda `#0D0D0F`.
 - **Lienzo fijo 1920×1080** que se escala (SlideScaler). Tipografía en el lienzo:
-  preguntas de divisor ~104px, títulos de slide ~60–68px, cuerpo mínimo ~34–42px.
+  títulos ~60–72px, frases destacadas ~84–112px, cuerpo mínimo ~34–42px.
 - **Tipografía:** Inter (Google Fonts, vía `next/font`).
-- Mucho espacio en blanco, alineación consistente. Solo modo claro.
+- Editorial, limpio, mucho espacio en blanco. Solo modo claro.
+- Máximo ~6 ítems y ~45 palabras visibles por slide. Si algo no entra, avisar en
+  vez de achicar la letra.
 - Transición entre slides: fade corto, respetando `prefers-reduced-motion`.
-- **No usar logos** (RE/MAX, WhatsApp, Instagram). Si hace falta, dejar `[LOGO]`.
+- **Sin logos** (RE/MAX, WhatsApp, Instagram). Los mockups son genéricos.
 
 ## Reglas de tono (texto visible)
 
 - Español rioplatense con **voseo**, directo, sin tono corporativo.
 - Comillas tipográficas `“ ”` y apóstrofo `’`.
-- **El presentador es experto en MARKETING, no en venta inmobiliaria.** Nunca
-  escribir texto que lo presente como experto en vender casas.
-- **No inventar contenido.** Si falta algo, `[A COMPLETAR: …]` y avisar.
+- **El presentador es experto en MARKETING, no en venta inmobiliaria.**
+- **No inventar contenido** ni datos. Si falta algo, `[A COMPLETAR: …]` y avisar.
 
 ## Flujo de deploy
 
@@ -151,5 +127,5 @@ tarjetas) · `grilla-preguntas` · `proceso` · `foto-texto`.
 
 - Después de cada cambio: verificar que compile (`npm run build`), hacer commit
   con mensaje descriptivo en español y `push` a `main`.
-- Separar contenido de diseño: contenido en `charla.ts`, estilo en los
+- Separar contenido de diseño: contenido en `slides.ts`, estilo en los
   componentes y los tokens.

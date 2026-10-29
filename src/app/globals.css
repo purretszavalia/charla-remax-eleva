@@ -48,6 +48,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* La hoja de impresión está oculta en pantalla. */
+.print-sheet {
+  display: none;
+}
+
 /* ============================================================
    TRANSICIÓN ENTRE SLIDES (fade corto)
    ============================================================ */
@@ -71,9 +76,9 @@ body {
 }
 
 /* ============================================================
-   IMPRESIÓN / EXPORTAR A PDF (desde /leer)
-   Una slide por página, horizontal, sin notas ni cromo.
-   Probado para "Guardar como PDF" en Chrome.
+   IMPRESIÓN / EXPORTAR A PDF
+   Imprimir desde el navegador (Chrome → "Guardar como PDF"):
+   una slide por página, horizontal, sin controles.
    ============================================================ */
 @media print {
   @page {
@@ -86,39 +91,28 @@ body {
     background: #fff !important;
   }
 
-  .no-print,
-  .leer-slide .notas-print {
+  /* Ocultar la presentación en vivo; mostrar la hoja de impresión. */
+  .deck-live {
     display: none !important;
   }
-
-  main {
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
+  .print-sheet {
+    display: block !important;
   }
 
-  .leer-slide {
-    margin: 0 !important;
+  .print-slide {
     break-after: page;
   }
-  .leer-slide:last-child {
+  .print-slide:last-child {
     break-after: auto;
   }
 
-  /* El recuadro que envuelve la slide: sin borde ni sombra al imprimir. */
-  .leer-slide > div:first-child {
-    border: 0 !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-  }
-
   /* Forzar el lienzo a 1280×720 (la medida de la página). */
-  .leer-slide .scaler-wrap {
+  .print-slide .scaler-wrap {
     width: 1280px !important;
     height: 720px !important;
     aspect-ratio: auto !important;
   }
-  .leer-slide .scaler-inner {
+  .print-slide .scaler-inner {
     transform: scale(0.6666667) !important;
     transform-origin: top left !important;
     opacity: 1 !important;

@@ -10,9 +10,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Vender una casa, de lo complejo a lo simple",
+  title: "Simplificando el Marketing y Proceso de ventas",
   description:
-    "Charla para asesores de RE/MAX Eleva. El proceso de venta en 11 preguntas, de lo complejo a lo simple.",
+    "Charla para asesores de RE/MAX Eleva. El proceso de venta, simple: Mostrar, Contactar, Acompañar, Cerrar.",
 };
 
 export default function RootLayout({
